@@ -36,4 +36,44 @@ class CartController extends Controller
         return view('cart.upCart', compact('cartItems'))->with('status', 'cart updated');
 
     }
+
+    public function updateCart($rowId,$qty)
+    {
+        Cart::update($rowId, $qty);
+        $carts=[];
+        $i=0;
+        foreach(Cart::content() as $row) {
+            $carts[$i]['id']=$row->id;
+            $carts[$i]['rowId']=$row->rowId;
+            $carts[$i]['qty']=$row->qty;
+            $carts[$i]['price']=$row->price;
+            $carts[$i]['name']=$row->name;
+            $carts[$i]['img']=$row->options->img;
+            $carts[$i]['stock']=$row->options->stock;
+            $carts[$i]['subtotal']=$row->subtotal;
+            $carts[$i]['tax']=$row->tax;
+            $i++;
+        }
+        return $carts;
+    }
+
+    public function getCart()
+    {
+//        return Cart::content();
+        $carts=[];
+        $i=0;
+        foreach(Cart::content() as $row) {
+            $carts[$i]['id']=$row->id;
+            $carts[$i]['rowId']=$row->rowId;
+            $carts[$i]['qty']=$row->qty;
+            $carts[$i]['price']=$row->price;
+            $carts[$i]['name']=$row->name;
+            $carts[$i]['img']=$row->options->img;
+            $carts[$i]['stock']=$row->options->stock;
+            $carts[$i]['subtotal']=$row->subtotal;
+            $carts[$i]['tax']=$row->tax;
+            $i++;
+        }
+        return $carts;
+    }
 }

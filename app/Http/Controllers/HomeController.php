@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Product;
+use App\ProductsProperty;
+use App\Recommend;
 use App\WishList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,8 +44,15 @@ class HomeController extends Controller
 
     public function product_details($id)
     {
+        if(Auth::check()){
+            $recommends = new Recommend();
+            $recommends ->uid = Auth::user()->id;
+            $recommends ->pro_id = $id;
+            $recommends ->save();
+        }
         $product=Product::findOrFail($id);
-        return view('front.product_details',compact('product'));
+        $pro_details=ProductsProperty::where('pro_id',$id)->get();
+        return view('front.product_details',compact('product','pro_details'));
     }
 
     public function contact()
@@ -71,8 +80,21 @@ class HomeController extends Controller
         return view('front.wishList', compact('Products'));
     }
 
-    public function removeWishList()
+    public function removeWishList($id)
     {
-        
+        WishList::where('pro_id',$id)->delete();
+        return back()->with('msg','Item Removed');
+    }
+
+    public function getProDetails($id)
+    {
+        return ProductsProperty::where('pro_id',$id)->get();
+
+    }
+
+    public function getProDetailsPrice($pro_detail_id)
+    {
+        $pp=ProductsProperty::find($pro_detail_id);
+        return $pp->p_price;
     }
 }

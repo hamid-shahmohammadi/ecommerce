@@ -14,7 +14,8 @@ class CheckoutController extends Controller
     {
         if(Auth::check()){
             $cartItems = Cart::content();
-            return view('front.checkout', compact('cartItems'));
+            $base_url=Controller::$base_url;
+            return view('front.checkout', compact('cartItems','base_url'));
         }else {
             return redirect('login');
         }

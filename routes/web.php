@@ -25,8 +25,12 @@ Route::get('/products', function () {
     return view('front/shop');
 });
 Route::get('/product_details/{id}', 'HomeController@product_details');
+Route::get('//getprodetails/{id}', 'HomeController@getProDetails');
+Route::get('//getprodetailsprice/{pro_detail_id}', 'HomeController@getProDetailsPrice');
 
 Route::get('/cart', 'CartController@index');
+Route::get('/cart/get', 'CartController@getCart');
+Route::get('/cart/update/{rowId}/{qty}', 'CartController@updateCart');
 Route::get('/cart/addItem/{id}','CartController@addItem');
 Route::get('/cart/remove/{id}','CartController@destroy');
 Route::put('/cart/update/{id}','CartController@update');
@@ -67,6 +71,10 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','admin']],
 
         Route::resource('product','ProductsController');
         Route::resource('category','CategoriesController');
+        Route::get('getCategory','CategoriesController@getGategory')->name('get.category.datatable');
+
+        Route::get('product/addProperty/{id}','ProductsController@addProperty')->name('addProperty');
+        Route::post('product/sumbitProperty/{id}','ProductsController@sumbitProperty')->name('sumbitProperty');
     }
 );
 

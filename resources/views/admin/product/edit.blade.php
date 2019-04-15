@@ -65,10 +65,16 @@
                 </div>
                 <div class="card-footer">
                  {{ Form::submit('Submit', array('class' => 'btn btn-primary')) }}
+
+                        <a href="{{route('addProperty',$product->id)}}" class="btn btn-sm btn-info" >Add Property</a>
+
                 </div>
 
-                {!! Form::close() !!}
+                </form>
             </div>
+        <div>
+
+        </div>
     </div>
 </div>
 

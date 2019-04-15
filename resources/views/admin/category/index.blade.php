@@ -18,35 +18,62 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body table-responsive p-0">
-                <table class="table table-hover">
-                    <tbody><tr>
+                <table class="table table-bordered table-hover dataTable" id="categories-table">
+                    <thead>
+                    <tr>
                         <th>ID</th>
                         <th>Name</th>
-                        <th>Status</th>
-                        <th>Delete</th>
+                        <th>parent_id</th>
+                        <th>action</th>
+                        {{--<th>created_at</th>--}}
+                        {{--<th>updated_at</th>--}}
                     </tr>
-                    @foreach($categories as $category)
-                    <tr>
-                        <td>{{$category->id}}</td>
-                        <td><a href="{{route('category.show',$category->id)}}">{{$category->name}}</a></td>
-                        <td>
-                            @if($category->status=='0')
-                                Enable
-                            @else
-                                Disable
+                    </thead>
+                    {{--@foreach($categories as $category)--}}
+                    {{--<tr>--}}
+                        {{--<td>{{$category->id}}</td>--}}
+                        {{--<td><a href="{{route('category.show',$category->id)}}">{{$category->name}}</a></td>--}}
+                        {{--<td>--}}
+                            {{--@if($category->status=='0')--}}
+                                {{--Enable--}}
+                            {{--@else--}}
+                                {{--Disable--}}
 
-                            @endif
-                        </td>
-                        {!! Form::open(['method'=>'DELETE', 'action'=> ['CategoriesController@destroy', $category->id]]) !!}
-                        <td>  {!! Form::submit('Delete Category', ['class'=>'btn btn-danger']) !!}</td>
-                        {!! Form::close() !!}
-                    </tr>
-                    @endforeach
-                    </tbody></table>
+                            {{--@endif--}}
+                        {{--</td>--}}
+                        {{--{!! Form::open(['method'=>'DELETE', 'action'=> ['CategoriesController@destroy', $category->id]]) !!}--}}
+                        {{--<td>  {!! Form::submit('Delete Category', ['class'=>'btn btn-danger']) !!}</td>--}}
+                        {{--{!! Form::close() !!}--}}
+                    {{--</tr>--}}
+                    {{--@endforeach--}}
+                    </table>
             </div>
             <!-- /.card-body -->
         </div>
         <!-- /.card -->
     </div>
 </div>
+
+@endsection
+@section('javascript')
+    <script src="//cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+
+        <script>
+            $(function() {
+                $('#categories-table').DataTable({
+                    processing: true,
+                    serverSide: true,
+                    ajax: '{!! route('get.category.datatable') !!}',
+                    columns: [
+                        { data: 'id', name: 'id' },
+                        { data: 'name', name: 'name' },
+                        { data: 'parent_id', name: 'parent_id' },
+                        {data: 'action', name: 'edit', orderable: false, searchable: false},
+                        // { data: 'created_at', name: 'created_at' },
+                        // { data: 'updated_at', name: 'updated_at' }
+                    ]
+                });
+            });
+        </script>
+
 @endsection

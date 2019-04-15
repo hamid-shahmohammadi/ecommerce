@@ -33,7 +33,7 @@
             @foreach($cartItems as $cartItem)
                 <tr>
                     <td class="cart_product">
-                        <a href="{{url('/product_details')}}/{{$cartItem->id}}"><img src="{{$cartItem->options->img}}" alt="" width="200px"></a>
+                        <a href="{{url('/product_details')}}/{{$cartItem->id}}"><img src="{{url('/').'/images/'.$cartItem->options->img}}" alt="" width="200px"></a>
                     </td>
                     {!! Form::open(['url' => ['cart/update',$cartItem->rowId], 'method'=>'put']) !!}
                     <td class="cart_description">

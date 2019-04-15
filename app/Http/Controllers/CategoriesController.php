@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
 
 class CategoriesController extends Controller
 {
@@ -14,6 +15,23 @@ class CategoriesController extends Controller
         return view('admin.category.index',compact(['categories','products']));
 
 
+    }
+
+    public function getGategory()
+    {
+        $categories=Category::select(['id','name','parent_id']);
+        return DataTables::of($categories)
+            ->addColumn('action', function ($category) {
+                return '<form method="post" action="'.url('/').'/admin/category/'.$category->id.'">
+                        '.csrf_field().'
+                        <input type="hidden" name="_method" value="DELETE">
+                        <a href="#edit" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
+                        <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+                        </form>';
+            })
+//            ->editColumn('id', 'ID: {{$id}}')
+//            ->removeColumn('password')
+            ->make(true);
     }
 
     public function create()

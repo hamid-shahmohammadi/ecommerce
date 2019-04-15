@@ -1,33 +1,7 @@
 @extends('front.master')
 
 @section('content')
-    <script>
-$(document).ready(function(){
-<?php for($i=1;$i<20;$i++){?>
-        $('#upCart<?php echo $i;?>').on('change keyup', function(){
-    var newqty = $('#upCart<?php echo $i;?>').val();
-    var rowId = $('#rowId<?php echo $i;?>').val();
-    var proId = $('#proId<?php echo $i;?>').val();
-    if(newqty <=0){ alert('enter only valid quantity') }
-     else {
-        // start of ajax
-       $.ajax({
-        type: 'get',
-        dataType: 'html',
-        url: '<?php echo url('/cart/update');?>/'+proId,
-        data: "qty=" + newqty + "& rowId=" + rowId + "& proId=" + proId,
-        success: function (response) {
-            console.log(response);
-            $('#updateDiv').html(response);
-        }
-    });
 
-       // End of Aajx
-     }
-    });
-  <?php } ?>
-        });
-        </script>
     <?php if ($cartItems->isEmpty()) { ?>
     <br>
     <br>
@@ -49,8 +23,7 @@ $(document).ready(function(){
     <section id="cart_items">
 
 
-        <div class="container">
-
+        <div class="container" id="app">
             <div class="breadcrumbs">
                 <ol class="breadcrumb">
                     <li><a href="{{url('/')}}"></a></li>
@@ -95,51 +68,41 @@ $(document).ready(function(){
 
 
                         </thead>
-
-                        <?php $count =1;?>
-                        @foreach($cartItems as $cartItem)
                             <tbody>
-                            <tr>
+                            <tr v-for="cart in carts">
                                 <td class="cart_product">
 
-                                    <p><img src="{{url('/images')}}/{{$cartItem->options->img}}" class="card-img-top bmw" ></p>
+                                    <img :src="getImg(cart.img)" class="img-thumbnail" >
                                 </td>
-                                <td class="cart_description">
-                                    <a href="{{url('/product_details')}}/{{$cartItem->id}}">
-                                        <br/>
-                                        <h4><a href="{{url('/product_details')}}/{{$cartItem->id}}" style="color:blue">{{$cartItem->name}}</a></h4>
-                                        <p>Product ID: {{$cartItem->id}}</p>
-                                        <p>Only {{$cartItem->options->stock}} left</p>
+                                <td>
+                                    <a href="">
+                                        <h4><a  style="color:blue">@{{cart.name}}</a></h4>
+                                        <p>Product ID: @{{cart.id}}</p>
+                                        <p>Only @{{cart.stock}} left</p>
                                     </a>
                                 </td>
                                 <td class="cart_price">
-                                    <p>${{$cartItem->price}}</p>
+                                    <p>$@{{cart.price}}</p>
                                 </td>
                                 <td class="cart_quantity">
-                                    <input type="hidden" id="rowId<?php echo $count;?>" value="{{$cartItem->rowId}}"/>
-                                    <input type="hidden" id="proId<?php echo $count;?>" value="{{$cartItem->id}}"/>
-                                    <input type="number" size="2" value="{{$cartItem->qty}}" name="qty" id="upCart<?php echo $count;?>"
-                                           autocomplete="off" style="text-align:center; max-width:50px; "  MIN="1" MAX="1000">
+                                    <input type="hidden" id="rowId" value="cart.rowId"/>
+                                    <input type="hidden" id="proId" :value="cart.id"/>
+                                    <input v-model="cart.qty" type="number" size="2" :value="cart.qty" name="qty" id="upCart"
+                                           autocomplete="off" style="text-align:center; max-width:50px;"
+                                           @change="changeQty(cart.rowId,cart.qty)" MIN="1" MAX="1000">
                                 </td>
                                 <td class="cart_total">
-                                    <p class="cart_total_price">${{$cartItem->subtotal}}</p>
+                                    <p class="cart_total_price">@{{cart.subtotal}}</p>
                                 </td>
                                 <td class="cart_delete">
                                     <button class="btn btn-primary">
                                         <a class="cart_quantity_delete" style="background-color:red"
-                                           href="{{url('/cart/remove')}}/{{$cartItem->rowId}}"><i class="fa fa-times"></i></a>
+                                           href="{{url('/cart/remove')}}/"><i class="fa fa-times"></i></a>
                                     </button>
                                 </td>
                             </tr>
 
-
-
-                            <?php $count++;?>
-
-
-
                             </tbody>
-                        @endforeach
                     </table>
 
                 </div>
@@ -157,18 +120,7 @@ $(document).ready(function(){
             <div class="row">
                 <div class="col-sm-6">
                     <div class="chose_area">
-                        <?php /*      <ul class="user_option">
-                            <li>
-                                <label>Use Coupon Code</label>
-                            </li>
-                            <li>
-                                <input type="text" id="couponCode">
-                            </li>
-                            <li>
-                                <button id="couponBtn">Apply</button>
-                            </li>
-                        </ul>
-                        */?>
+
                         <ul class="user_info">
                             <li class="single_field">
                                 <label>Country:</label>
@@ -208,10 +160,10 @@ $(document).ready(function(){
                 <div class="col-sm-6">
                     <div class="total_area">
                         <ul>
-                            <li>Cart Sub Total <span>${{$cartItem->subtotal}}</span></li>
-                            <li>Eco Tax <span>${{Cart::tax()}}</span></li>
+                            <li>Cart Sub Total <span>$@{{cart.subtotal}}</span></li>
+                            <li>Eco Tax <span>$@{{cart.tax}}</span></li>
                             <li>Shipping Cost <span>Free</span></li>
-                            <li>Total <span>${{$cartItem->total}}</span></li>
+                            <li>Total <span>$@{{cart.subtotal}}</span></li>
                         </ul>
                         <a class="btn btn-default update" href="">Update</a>
                         <a class="btn btn-default check_out" href="{{url('/')}}/checkout">Check Out</a>
@@ -219,6 +171,14 @@ $(document).ready(function(){
                 </div>
             </div>
         </div>
-    </section><!--/#do_action-->
+    </section>
     <?php } ?>
+@endsection
+@section('javascript')
+    <script>
+        var base_url='{{url('/')}}'
+    </script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="{{asset('assets/js/app/cart.js')}}"></script>
 @endsection

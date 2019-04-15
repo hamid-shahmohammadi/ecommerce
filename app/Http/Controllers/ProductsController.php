@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Product;
+use App\ProductsProperty;
 use Illuminate\Http\Request;
+use DB;
 
 class ProductsController extends Controller
 {
@@ -12,7 +14,8 @@ class ProductsController extends Controller
     {
 
         $base_url=Controller::$base_url;
-        $products=Product::all();
+        $products = DB::table('categories')->rightJoin('products', 'products.category_id', '=', 'categories.id')->paginate(10); // now we are fetching all products
+//        $products=Product::all();
         return view('admin.product.index',compact('products','base_url'));
     }
 
@@ -81,5 +84,28 @@ class ProductsController extends Controller
             ->update($formInput);
 
         return back()->with('message','Update Product Success');
+    }
+
+    public function addProperty($id)
+    {
+        $products=Product::findOrFail($id);
+        return view('admin.product.addProperty',compact('products'));
+    }
+
+    public function sumbitProperty(Request $request)
+    {
+        $this->validate($request,[
+            'pro_id'=>'required',
+            'size'=>'required',
+            'color'=>'required',
+            'p_price'=>'required',
+        ]);
+        $properties =new ProductsProperty();
+        $properties->pro_id=$request->pro_id;
+        $properties->size=$request->size;
+        $properties->color=$request->color;
+        $properties->p_price=$request->p_price;
+        $properties->save();
+        return redirect()->back()->with('msg','Add Product Property Success');
     }
 }
