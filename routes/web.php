@@ -72,6 +72,7 @@ Route::group(['prefix'=>'admin','middleware'=>['auth','admin']],
         Route::resource('product','ProductsController');
         Route::resource('category','CategoriesController');
         Route::get('getCategory','CategoriesController@getGategory')->name('get.category.datatable');
+        Route::post('removeCategory','CategoriesController@removeCategory')->name('removeCategory');
 
         Route::get('product/addProperty/{id}','ProductsController@addProperty')->name('addProperty');
         Route::post('product/sumbitProperty/{id}','ProductsController@sumbitProperty')->name('sumbitProperty');

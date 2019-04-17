@@ -18,35 +18,28 @@
             </div>
             <!-- /.card-header -->
             <div class="card-body table-responsive p-0">
+                @if(Session::has('msg'))
+                    <div class="alert alert-info">{{Session::get('msg')}}</div>
+                @endif
+                <form action="{{route('removeCategory')}}" method="post">
+                    @csrf
+                    <div class="m-2">
+                    <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> </button>
+                        <hr/>
+                    </div>
                 <table class="table table-bordered table-hover dataTable" id="categories-table">
                     <thead>
                     <tr>
+                        <td><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);"></td>
                         <th>ID</th>
                         <th>Name</th>
                         <th>parent_id</th>
                         <th>action</th>
-                        {{--<th>created_at</th>--}}
-                        {{--<th>updated_at</th>--}}
                     </tr>
                     </thead>
-                    {{--@foreach($categories as $category)--}}
-                    {{--<tr>--}}
-                        {{--<td>{{$category->id}}</td>--}}
-                        {{--<td><a href="{{route('category.show',$category->id)}}">{{$category->name}}</a></td>--}}
-                        {{--<td>--}}
-                            {{--@if($category->status=='0')--}}
-                                {{--Enable--}}
-                            {{--@else--}}
-                                {{--Disable--}}
 
-                            {{--@endif--}}
-                        {{--</td>--}}
-                        {{--{!! Form::open(['method'=>'DELETE', 'action'=> ['CategoriesController@destroy', $category->id]]) !!}--}}
-                        {{--<td>  {!! Form::submit('Delete Category', ['class'=>'btn btn-danger']) !!}</td>--}}
-                        {{--{!! Form::close() !!}--}}
-                    {{--</tr>--}}
-                    {{--@endforeach--}}
                     </table>
+                </form>
             </div>
             <!-- /.card-body -->
         </div>
@@ -65,10 +58,11 @@
                     serverSide: true,
                     ajax: '{!! route('get.category.datatable') !!}',
                     columns: [
+                        {data: 'checkbox', name: 'checkbox', orderable: false, searchable: false},
                         { data: 'id', name: 'id' },
                         { data: 'name', name: 'name' },
                         { data: 'parent_id', name: 'parent_id' },
-                        {data: 'action', name: 'edit', orderable: false, searchable: false},
+                        {data: 'edit', name: 'edit', orderable: false, searchable: false},
                         // { data: 'created_at', name: 'created_at' },
                         // { data: 'updated_at', name: 'updated_at' }
                     ]

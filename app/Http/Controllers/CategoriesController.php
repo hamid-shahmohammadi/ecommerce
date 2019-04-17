@@ -21,16 +21,14 @@ class CategoriesController extends Controller
     {
         $categories=Category::select(['id','name','parent_id']);
         return DataTables::of($categories)
-            ->addColumn('action', function ($category) {
-                return '<form method="post" action="'.url('/').'/admin/category/'.$category->id.'">
-                        '.csrf_field().'
-                        <input type="hidden" name="_method" value="DELETE">
-                        <a href="#edit" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>
-                        <button type="submit" class="btn btn-danger"><i class="fa fa-trash"></i></button>
-                        </form>';
+
+            ->addColumn('edit', function (){
+                return '<a href="" class="btn btn-xs btn-primary"><i class="fa fa-edit"></i></a>';
             })
-//            ->editColumn('id', 'ID: {{$id}}')
-//            ->removeColumn('password')
+            ->addColumn('checkbox',function ($category){
+                return "<input type='checkbox' name='selected[]' value='".$category->id."'>";
+            })
+            ->escapeColumns(['checkbox'])
             ->make(true);
     }
 
@@ -70,5 +68,12 @@ class CategoriesController extends Controller
         Category::findOrFail($id)->delete();
 
         return redirect()->back();
+    }
+
+    public function removeCategory(Request $request)
+    {
+        $selected=$request->input('selected');
+        Category::destroy($selected);
+        return back()->with('msg','category deleted successfully!');
     }
 }
